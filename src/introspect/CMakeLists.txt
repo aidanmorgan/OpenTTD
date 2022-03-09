@@ -1,6 +1,6 @@
 add_files(
-        introspect.h
-        introspect.c
+        introspect.hpp
+        introspect.cpp
 )
 
 add_subdirectory(dbus)

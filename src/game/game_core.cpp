@@ -20,8 +20,11 @@
 #include "game_instance.hpp"
 #include "game_info.hpp"
 
-#include "../safeguards.h"
 #include "station_base.h"
+
+#include "introspect/introspect.hpp"
+#include "introspect/dbus/introspect_dbus.hpp"
+#include <malloc.h>
 
 /* static */ uint Game::frame_counter = 0;
 /* static */ GameInfo *Game::info = nullptr;
@@ -113,9 +116,12 @@
 // TODO : this needs a bunch of work, probably want to do some #ifdef's to disable this feature by default
 // TODO : as well as support different types of introspection tools, with different configurations loaded
 // TODO : from the openttd.cfg file at runtime.
-        auto context = (introspect_context_t)malloc(sizeof(struct introspect_context));
-        dbus_introspect_init(context, 'openttd.org');
-        Game::introspect_context = context;
+        auto ctx = MallocT<struct introspect_context>((size_t)1);
+        std::string channel_name = "org.openttd";
+
+        introspect_dbus_init(ctx, channel_name.c_str());
+
+        Game::introspect_context = (introspect_context_t) ctx;
     }
 }
 

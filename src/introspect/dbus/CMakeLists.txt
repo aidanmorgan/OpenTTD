@@ -1,4 +1,4 @@
 add_files(
-        introspect_dbus.h
-        introspect_dbus.c
+        introspect_dbus.hpp
+        introspect_dbus.cpp
 )

@@ -1,6 +1,7 @@
-#include "introspect_dbus.h"
+#include <malloc.h>
+#include "introspect_dbus.hpp"
 
-int32_t introspect_dbus_send_vehicle(introspect_dbus_context_t context, struct Vehicle* vehicle) {
+int32_t introspect_dbus_send_vehicle(introspect_dbus_context_t context, const struct Vehicle* vehicle) {
     DBusMessage* msg = dbus_message_new_signal('/vehicle/', 'org.openttd.Vehicle', 'Vehicle');
 
     if(NULL == msg) {
@@ -19,21 +20,25 @@ int32_t introspect_dbus_send_vehicle(introspect_dbus_context_t context, struct V
     }
     dbus_connection_flush(conn);
     dbus_message_unref(msg);
+
+    return 0;
 }
 
-int32_t introspect_dbus_send_station(introspect_dbus_context_t context, struct Station* vehicle) {
-
+int32_t introspect_dbus_send_station(introspect_dbus_context_t context, const struct Station* vehicle) {
+    return 0;
 }
 
-int32_t introspect_dbus_send_town(introspect_dbus_context_t context, struct Town* vehicle) {
+int32_t introspect_dbus_send_town(introspect_dbus_context_t context, const struct Town* vehicle) {
 
+    return 0;
 }
 
-void introspect_dbus_clos(introspect_dbus_context_t context) {
+int32_t introspect_dbus_close(introspect_dbus_context_t context) {
     dbus_connection_close(context->connection);
+    return 0;
 }
 
-int32_t introspect_dbus_init(introspect_context_t context, char* in_channel_name) {
+int32_t introspect_dbus_init(introspect_context_t context, const char* in_channel_name) {
     context->send_town = &introspect_dbus_send_town;
     context->send_station = &introspect_dbus_send_station;
     context->send_vehicle = &introspect_dbus_send_vehicle;
@@ -50,16 +55,16 @@ int32_t introspect_dbus_init(introspect_context_t context, char* in_channel_name
         dbus_error_free(&err);
         return -1;
     }
+
     if (NULL == conn) {
         return -1;
     }
 
+    auto impl = MallocT<introspect_dbus_context>((size_t)1);
+    impl->channel_name = in_channel_name;
+    impl->connection = conn;
 
-    introspect_dbus_context_t dbus_context = {
-            channel_name = in_channel_name,
-            connection = conn
-    };
-    context->additional_context = (void*)dbus_context;
+    context->instance_context = (void*)impl;
     return 0;
 }
 

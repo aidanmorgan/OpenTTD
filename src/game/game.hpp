@@ -13,8 +13,8 @@
 #include "../core/string_compare_type.hpp"
 #include "game_scanner.hpp"
 #include <map>
-#include "introspect/introspect.h"
-#include "introspect/dbus/introspect_dbus.h"
+#include "introspect/introspect.hpp"
+#include "introspect/dbus/introspect_dbus.hpp"
 
 /** A list that maps AI names to their AIInfo object. */
 typedef std::map<const char *, class ScriptInfo *, StringCompare> ScriptInfoList;
