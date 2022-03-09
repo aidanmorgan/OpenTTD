@@ -75,6 +75,8 @@
 
 #include "safeguards.h"
 
+#include "dbus/dbus.h"
+
 #ifdef __EMSCRIPTEN__
 #	include <emscripten.h>
 #	include <emscripten/html5.h>
@@ -1347,6 +1349,8 @@ void StateGameLoop()
 		RunTileLoop();
 		CallVehicleTicks();
 		CallLandscapeTick();
+
+		PublishToDbus();
 		BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP);
 		UpdateLandscapingLimits();
 

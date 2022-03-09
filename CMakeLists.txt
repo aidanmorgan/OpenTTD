@@ -209,6 +209,12 @@ endif()
 
 include(SourceList)
 
+find_package(DBUS REQUIRED)
+# Use results of find_package() call.
+include_directories(${DBUS_INCLUDE_DIRS})
+
+message(STATUS "DBus found -- (include): ${DBUS_INCLUDE_DIRS}  (lib): ${DBUS_LIBRARIES}")
+
 # Needed by rev.cpp
 include_directories(${CMAKE_SOURCE_DIR}/src)
 # Needed by everything that uses Squirrel
