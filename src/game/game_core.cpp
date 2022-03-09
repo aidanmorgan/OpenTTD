@@ -21,12 +21,14 @@
 #include "game_info.hpp"
 
 #include "../safeguards.h"
+#include "station_base.h"
 
 /* static */ uint Game::frame_counter = 0;
 /* static */ GameInfo *Game::info = nullptr;
 /* static */ GameInstance *Game::instance = nullptr;
 /* static */ GameScannerInfo *Game::scanner_info = nullptr;
 /* static */ GameScannerLibrary *Game::scanner_library = nullptr;
+/* static */ introspect_context_t introspect_context = nullptr;
 
 /* static */ void Game::GameLoop()
 {
@@ -47,6 +49,20 @@
 	cur_company.Change(OWNER_DEITY);
 	Game::instance->GameLoop();
 	cur_company.Restore();
+
+    if (Game::introspect_context != nullptr) {
+        for (Vehicle *v : Vehicle::Iterate()) {
+            introspect_send_vehicle(Game::introspect_context, v);
+        }
+
+        for(Station*s : Station::Iterate()) {
+            introspect_send_station(Game::introspect_context, s);
+        }
+
+        for(Town*t : Town::Iterate()) {
+            introspect_send_town(Game::introspect_context, t);
+        }
+    }
 
 	/* Occasionally collect garbage */
 	if ((Game::frame_counter & 255) == 0) {
@@ -92,6 +108,15 @@
 	cur_company.Restore();
 
 	InvalidateWindowData(WC_AI_DEBUG, 0, -1);
+
+    if(Game::introspect_context == nullptr) {
+// TODO : this needs a bunch of work, probably want to do some #ifdef's to disable this feature by default
+// TODO : as well as support different types of introspection tools, with different configurations loaded
+// TODO : from the openttd.cfg file at runtime.
+        auto context = (introspect_context_t)malloc(sizeof(struct introspect_context));
+        dbus_introspect_init(context, 'openttd.org');
+        Game::introspect_context = context;
+    }
 }
 
 /* static */ void Game::Uninitialize(bool keepConfig)
@@ -121,6 +146,10 @@
 			_settings_newgame.game_config = nullptr;
 		}
 	}
+
+    if( Game::introspect_context != nullptr) {
+        introspect_close(Game::introspect_context);
+    }
 }
 
 /* static */ void Game::Pause()

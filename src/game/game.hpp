@@ -13,6 +13,8 @@
 #include "../core/string_compare_type.hpp"
 #include "game_scanner.hpp"
 #include <map>
+#include "introspect/introspect.h"
+#include "introspect/dbus/introspect_dbus.h"
 
 /** A list that maps AI names to their AIInfo object. */
 typedef std::map<const char *, class ScriptInfo *, StringCompare> ScriptInfoList;
@@ -124,6 +126,7 @@ private:
 	static class GameScannerInfo *scanner_info;       ///< Scanner for Game scripts.
 	static class GameScannerLibrary *scanner_library; ///< Scanner for GS Libraries.
 	static class GameInfo *info;                      ///< Current selected GameInfo.
+	static introspect_context_t introspect_context;
 };
 
 #endif /* GAME_HPP */
